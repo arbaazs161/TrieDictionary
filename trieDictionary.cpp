@@ -49,7 +49,7 @@ void buildWord(wordStructure*& root, const string& word, const string& meaning){
 string searchMeaning(wordStructure* root, const string& word){
 
     if (root == NULL) 
-        return ""; 
+        return NULL; 
   
     wordStructure* temp = root;     
   
@@ -57,13 +57,38 @@ string searchMeaning(wordStructure* root, const string& word){
     for (int i = 0; i < word.length(); i++) { 
         temp = temp->map[word[i]]; 
         if (temp == NULL) 
-            return ""; 
+            return NULL; 
     } 
                                     //iterates through every character
                                     //until end of word is true
     if (temp->isEnd) 
         return temp->meaning;       //returns meaning of word stored.
-    return "";
+    return NULL;
+
+}
+
+
+
+string suggestWord(wordStructure *root, string word){
+    if(root->isEnd){
+        return word;
+    }
+
+    if(root == NULL){
+        return "No Word Found";
+    }
+
+    for(int i = 0; i<word.length(); i++){
+        root = root->map[word[i]];
+    }
+
+    while(!root->isEnd){
+        char x = root->map.begin()->first;
+        word.push_back(x);
+        root = root->map[x];
+    }
+
+    return word;
 
 }
 
@@ -95,6 +120,7 @@ int main(){     //Main Call
     cout <<"Meaning of "<<str<<" : ";
     transform(str.begin(), str.end(), str.begin(), ::tolower);
     cout<<searchMeaning(root, str);
+    cout<<suggestWord(root, "na");
 
     return 0;
 }
