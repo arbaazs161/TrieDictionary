@@ -49,7 +49,7 @@ void buildWord(wordStructure*& root, const string& word, const string& meaning){
 string searchMeaning(wordStructure* root, const string& word){
 
     if (root == NULL) 
-        return NULL; 
+        return ""; 
   
     wordStructure* temp = root;     
   
@@ -57,13 +57,13 @@ string searchMeaning(wordStructure* root, const string& word){
     for (int i = 0; i < word.length(); i++) { 
         temp = temp->map[word[i]]; 
         if (temp == NULL) 
-            return NULL; 
+            return ""; 
     } 
                                     //iterates through every character
                                     //until end of word is true
     if (temp->isEnd) 
         return temp->meaning;       //returns meaning of word stored.
-    return NULL;
+    return "";
 
 }
 
@@ -92,11 +92,36 @@ string suggestWord(wordStructure *root, string word){
 
 }
 
-int main(){     //Main Call
+string query(wordStructure* root){  //Reads words and meaning from a file
+                                    //separated by "|"
+    cout<<"Enter word to search : ";
+    string str, meaning, meaningStr;
+    cin>>str; 
+    
+    transform(str.begin(), str.end(), str.begin(), ::tolower);
+    meaning = searchMeaning(root, str);
+    if(meaning != ""){
+        meaningStr = "Meaning of " + str + " is : " + meaning;
+    }
+    else{
+        meaning = suggestWord(root, str.substr(0, str.length()/2));
+        if(meaning != ""){
+            meaningStr = "Did you mean : " + meaning;
+        }
+        else{
+            meaningStr = "No such Word found :(";
+        }
+    }
+    return meaningStr;
+}
+
+int main(){     //Main
 
     wordStructure* root = NULL;
+    bool quit = true;
+    int startup;
 
-    std::ifstream inFile("dictionary.txt");
+    std::ifstream inFile("AWordsDict.txt");
     if (inFile.is_open())
     {
         std::string line;
@@ -112,15 +137,23 @@ int main(){     //Main Call
             buildWord(root, word, meaning);        
         }
     }
-                                    //Reads words and meaning from a file
-                                    //separated by "|"
-    cout<<"Enter word to search : ";
-    string str;
-    cin>>str; 
-    cout <<"Meaning of "<<str<<" : ";
-    transform(str.begin(), str.end(), str.begin(), ::tolower);
-    cout<<searchMeaning(root, str);
-    cout<<suggestWord(root, "na");
+    
+    cout<<"Welcome to My Dictionary\n";
+    do{
+    cout<<"1. Search Word\n";
+    cout<<"0. Quit\n";
+    cin>>startup;
 
+    switch(startup){
+        case 1: cout<<query(root)<<"\n";
+                //cout<<suggestWord(root, "ad");
+                break;
+        case 0: quit = false;
+                break;
+        default: cout<<"Wrong Command :( . Try Again.\n";
+                break;
+    }
+    }while (quit);
+    
     return 0;
 }
